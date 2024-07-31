@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="float-lg-right">
+    <a href="/logout">
+        <p>
+            Log out
+        </p>
+    </a>
+</div>
+<div class="container my-5">
+    <h1>Edit User</h1>
+    <form th:action="@{/users/{id}/update(id=${user.id})}" method="post">
+        <input name="person" th:value="${person}" type="hidden">
+        <div class="mb-3">
+            <label for="first" class="form-label">firstName</label>
+            <input name="firstName" th:value="${user.firstName}" type="text" class="form-control" id="first" required>
+        </div>
+        <div class="mb-3">
+            <label for="last" class="form-label">LastName</label>
+            <input name="lastName" th:value="${user.lastName}" type="text" class="form-control" id="last" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Phone</label>
+            <input name="phone" th:value="${user.phone}" type="tel" class="form-control" id="email" required>
+        </div>
+
+
+
+        <div th:if="${person}">
+        <div th:if="${person.equals('doctor')}" class="mb-3">
+            <label for="sp" class="form-label">Speciality</label>
+            <input name="speciality" th:value="${user.phone}" type="tel" class="form-control" id="sp" required>
+        </div>
+        <div th:if="${person.equals('doctor')}" class="mb-3">
+            <label for="room" class="form-label">Room</label>
+            <input name="room" th:value="${user.phone}" type="tel" class="form-control" id="room" required>
+        </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

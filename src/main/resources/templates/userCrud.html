@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="float-lg-right border-danger m-3">
+    <a href="/logout">
+        <button class="btn btn-dark">
+            Log out
+        </button>
+    </a>
+</div>
+<div class="container my-5">
+    <div class="row">
+        <div class="card bg-dark col"><a href="/users?person=doctor">Doctor Crud</a></div>
+        <div class="card bg-dark col"><a href="/users?person=patient">Patient Crud</a></div>
+        <div class="card bg-dark col"><a href="/users?person=administrator">Administrator Crud</a></div>
+    </div>
+    <h1>User Management</h1>
+    <a th:if="${person}" th:href="@{/users/new (person=${person})}" class="btn btn-primary mb-3">Add New User</a>
+    <a th:unless="${person}" th:href="@{/users/new}" class="btn btn-primary mb-3">Add New User</a>
+    <div th:unless="${doctors}">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.firstName}"></td>
+                <td th:text="${user.lastName}"></td>
+                <td th:text="${user.phone}"></td>
+                <td>
+                    <span th:each="role : ${user.roles}" th:text="${role.getAuthority()} + ' '"></span>
+                </td>
+                <td>
+                    <a th:href="@{/users/{id}/edit(id=${user.id})}" class="btn btn-primary">Edit</a>
+                    <a th:href="@{/users/{id}/delete(id=${user.id})}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div th:if="${doctors}">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Roles</th>
+                <th>Speciality</th>
+                <th>room</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="doctor : ${doctors}">
+                <td th:text="${doctor.id}"></td>
+                <td th:text="${doctor.user.firstName}"></td>
+                <td th:text="${doctor.user.lastName}"></td>
+                <td th:text="${doctor.user.phone}"></td>
+                <td>
+                    <span th:each="role : ${doctor.user.roles}" th:text="${role.getAuthority()} + ' '"></span>
+                </td>
+                <td th:text="${doctor.speciality.name}"></td>
+                <td th:text="${doctor.room.name}"></td>
+                <td th:if="${person}">
+                    <a  th:href="@{/users/{id}/edit(id=${doctor.user.id}, person=${person})}" class="btn btn-primary">Edit</a>
+                    <a  th:href="@{/users/{id}/delete(id=${doctor.user.id},  person=${person})}" class="btn btn-danger">Delete</a>
+                </td>
+                <td th:unless="${person}">
+                    <a  th:href="@{/users/{id}/edit(id=${doctor.user.id})}" class="btn btn-primary">Edit</a>
+                    <a  th:href="@{/users/{id}/delete(id=${doctor.user.id})}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Administration</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .btn-qabulda {
+            color: #fff;
+            background-color: #71dd8a;
+            border-color: #71dd8a;
+        }
+
+        .btn-qabulda:hover {
+            background-color: #4cae70;
+            border-color: #47a66b;
+        }
+
+        .btn-kiritib-yuborish {
+            color: #212529;
+            background-color: cornflowerblue;
+            border-color: black;
+        }
+
+        .btn-kelgan {
+            color: #212529;
+            background-color: lavender;
+            border-color: lavender;
+        }
+
+        .btn-kiritib-yuborish:hover {
+            background-color: #e6e6fa;
+            border-color: #dcdcf5;
+        }
+
+        .btn:disabled,
+        .btn:disabled:hover {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+
+        /* Professional CSS Styles */
+
+
+        /*button {
+            background-color: #4CAF50; !* Green *!
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }*/
+
+        /*   button:hover {
+               background-color: #45a049;
+           }*/
+
+        .current-patient {
+            background-color: #008CBA; /* Blue */
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+        }
+
+        .current-patient:hover {
+            background-color: #007B8A;
+            color: white;
+        }
+
+        .patient-info {
+            background-color: #040505; /* Red */
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+        }
+
+        .patient-info:hover {
+            border-radius: 3px;
+            background-color: rebeccapurple;
+            color: gold;
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .col-3, .col-9 {
+            padding: 20px;
+        }
+
+        .col-3 {
+            width: 25%;
+            border-right: 2px solid #ddd;
+        }
+
+        .col-9 {
+            width: 75%;
+        }
+
+        .search-patients, .appointment-setup {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-patients input, .appointment-setup select, .appointment-setup input {
+            width: 160%;
+            padding: 5px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-patients input:hover, .appointment-setup select:hover, .appointment-setup input:hover {
+            border-color: #555;
+        }
+
+        .showPatient {
+            margin: 5px;
+            padding: 5px 10px;
+            border: none;
+            background-color: #0056b3;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+
+        .showPatient :hover {
+            background-color: #80bdff;
+        }
+
+        .patient-info {
+            border-radius: 10px;
+            width: 40vh;
+            border: 2px solid #ddd;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /*.current-patient {
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }*/
+
+
+        textarea {
+            width: 100%;
+            padding: 5px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .admissions {
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .admission {
+            margin-top: 10px;
+            box-shadow: 2px 2px 5px black;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+    </style>
+</head>
+<body>
+<div class="float-lg-right border-danger m-3">
+    <a href="/logout">
+        <button class="btn btn-dark">
+            Log out
+        </button>
+    </a>
+</div>
+<div class="row">
+    <div class="col-3">
+        <div class="search-patients">
+            <form>
+                <label for="search"></label>
+                <input th:value="${search!=null ? search:''}" name="searchText" type="text" id="search"
+                       placeholder="Search patients">
+            </form>
+        </div>
+        <div class="addPatient" th:if="${patients.isEmpty()}">
+            <a href="/admin/add/patient">
+                <button class="current-patient">add patient</button>
+            </a>
+        </div>
+        <form>
+            <button th:each="patient: ${patients}" name="patientId" th:value="${patient.getId()}" class="patient-info">
+                <h2 th:text="${patient.getUser().firstName+' '+patient.getUser().getLastName()}">Patient Name</h2>
+                <p th:text="${'phone: '+patient.getUser().getPhone()}" class="showPatient">Phone Number</p>
+            </button>
+        </form>
+
+    </div>
+    <div class="col-9">
+        <form action="/admin/add/admission" method="post">
+            <div th:if="${currentPatient}" class="current-patient">
+                <input type="hidden" name="patientId" th:value="${currentPatient.id}">
+                <h2 th:text="${currentPatient.getUser().getFirstName()+' '+currentPatient.getUser().getLastName()}">
+                    Current Patient Name</h2>
+                <div class="appointment-setup">
+                    <label for="doctor"></label>
+                    <select name="doctorId" id="doctor">
+                        <option th:each="doctor: ${doctors}"
+                                th:text="${'Dr: '+doctor.getUser().getFirstName()+' '+doctor.user.lastName+' #'+doctor.getSpeciality().name}"
+                                th:value="${doctor.getId()}">Doctor 1
+                        </option>
+                    </select>
+                    <label for="appointment-time"></label>
+                    <input name="dateTime" type="datetime-local" id="appointment-time">
+                    <button style="background-color: gold; text-decoration-color: #abdde5">Subscribe</button>
+                </div>
+                <label for="description"></label>
+                <textarea name="description" id="description" placeholder="Description"></textarea>
+            </div>
+        </form>
+        <div class="admissions">
+            <div th:each="admission: ${admissions}" class="admission">
+                <span th:text="${'Dr: '+admission.doctor.user.getFirstName()+' '+admission.doctor.user.lastName}">Doctor's Name</span>
+                <span th:text="${'('+ admission.localDateTime.getHour()+':'+admission.localDateTime.getMinute()+')   '+admission.localDateTime.getDayOfMonth()+'/'+admission.localDateTime.getMonthValue()+'/'+admission.localDateTime.getYear()}">Appointment Time</span>
+                <form action="/admin/add/accept">
+                    <input th:if="${currentPatient}" type="hidden" name="patientId" th:value="${currentPatient.id}">
+                    <input type="hidden" name="admissionId" th:value="${admission.id}">
+                    <button th:if="${admission.getStatus().toString().equals('QABULDA')}" class="btn-qabulda"
+                            th:text="${'KUTMOQDA...'+admission.orderCount}"
+                            disabled
+                            th:disabled="${!admission.getStatus().toString().equals('Kiritib yuborish')}">
+                    </button>
+                    <button th:if="${admission.getStatus().toString().equals('Kiritib yuborish')}"
+                            class="btn-kiritib-yuborish"
+                            th:text="${admission.getStatus().toString()}"
+                            th:disabled="${!admission.getStatus().toString().equals('Kiritib yuborish')}">
+                    </button>
+                    <button th:if="${admission.getStatus().toString().equals('Kechikib kelgan') || admission.getStatus().toString().equals('Vaqtida kelgan')}"
+                            class="btn-kelgan"
+                            th:text="${admission.getStatus().toString()}"
+                            disabled
+                            th:disabled="${!admission.getStatus().toString().equals('Kiritib yuborish')}">
+                    </button>
+                </form>
+                <div class="card-link p-1">
+                    <a th:href="|/admin/show/patient?patientId=${admission.patient.id}|">
+                        <button class="btn btn-info">story patient</button>
+                    </a>
+                </div>
+
+                <!--  <span th:text="${'hjbbjb'}">Treatment Price</span> -->
+                <a th:href="|/home/patient/info?admissionId=${admission.id}|">
+                    <button class="showPatient">
+                        <span th:text="${admission.patient.user.firstName + ' ' + admission.patient.user.lastName}">Patient's Name</span>
+                    </button>
+                </a>
+
+            </div>
+            <!-- More admissions can be added here -->
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor's Cabinet</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* CSS styles remain the same as before */
+    </style>
+</head>
+<body>
+<div class="float-lg-right border-danger m-3">
+    <a href="/logout">
+        <button class="btn btn-dark">
+            Log out
+        </button>
+    </a>
+</div>
+<div class="container my-5">
+    <div class="doctor-cabinet">
+        <h1>Doctor</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="patient-list">
+                    <h5>Patients</h5>
+                    <div th:if="${admissions}">
+                        <a th:each="admission: ${admissions}"
+                           th:href="|/doctor/office?admissionId=${admission.id}|">
+                            <button th:unless="${currentAdmission}" name="admissionId"
+                                    class="btn text-white bg-dark card btn-outline-success m-3 p-2" style="width: 40vh"
+                                    th:text="${admission.patient.user.firstName+' '+admission.patient.user.lastName+' '+admission.orderCount}"
+                                    th:value="${admission.id}">
+                            </button>
+                            <button th:if="${currentAdmission}" name="admissionId"
+                                    th:class="${currentAdmission.patient.id==admission.patient.id ? 'bg-success btn text-white card btn-outline-success m-3 p-2':'bg-dark btn text-white card btn-outline-success m-3 p-2'}"
+                                    style="width: 40vh"
+                                    th:text="${admission.patient.user.firstName+' '+admission.patient.user.lastName+' '+admission.orderCount}"
+                                    th:value="${admission.id}">
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8" id="p-f">
+                <div class="procedures-form">
+                    <h5 th:if="${currentAdmission}"
+                        th:text="${currentAdmission.patient.user.firstName+' '+currentAdmission.patient.user.lastName}">
+                        Eshmat Toshmatov</h5>
+                    <button type="button" class="btn btn-primary" onclick="addProcedureForm()">+</button>
+                    <button type="button" class="btn btn-primary" onclick="minusProceduresForm()">-</button>
+                    <form id="procedures-form">
+                        <div id="procedures-container">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <label for="procedures-0">Procedure 1</label>
+                                        <input type="text" class="form-control" id="procedures-0"
+                                               placeholder="Enter procedure" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="price-0">Price</label>
+                                        <input type="text" class="form-control" id="price-0" placeholder="Enter price"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary float-right" onclick="sendProcedures()">Finish
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let procedureCount = 1;
+    function minusProceduresForm() {
+        let procedures = document.getElementById('procedures-container');
+        if (procedureCount >= 2) {
+            let inputDivs = procedures.querySelectorAll('.form-group')
+            let inputLast = inputDivs[inputDivs.length - 1]
+            inputLast.remove()
+            procedureCount-=1;
+        }
+    }
+
+    function addProcedureForm() {
+        const proceduresContainer = document.getElementById('procedures-container');
+        const newProcedureForm = document.createElement('div');
+        newProcedureForm.className = 'form-group';
+        newProcedureForm.innerHTML = `
+            <div class="row">
+                <div class="col-8">
+                    <label for="procedures-${procedureCount}">Procedure ${procedureCount + 1}</label>
+                    <input type="text" class="form-control" id="procedures-${procedureCount}" placeholder="Enter procedure">
+                </div>
+                <div class="col-4">
+                    <label for="price-${procedureCount}">Price</label>
+                    <input type="text" class="form-control" id="price-${procedureCount}" placeholder="Enter price">
+                </div>
+            </div>
+        `;
+        proceduresContainer.appendChild(newProcedureForm);
+        procedureCount++;
+    }
+
+    function sendProcedures() {
+        const proceduresForm = document.getElementById('p-f');
+        const procedureInputs = proceduresForm.querySelectorAll('.form-control');
+        const procedures = [];
+
+        for (let i = 0; i < procedureInputs.length; i += 2) {
+            const description = procedureInputs[i].value;
+            const price = procedureInputs[i + 1].value;
+            procedures.push({description, price});
+        }
+
+        // Send the procedures data to the server using fetch
+        fetch('http://localhost:8080/doctor/procedure', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(procedures)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Procedures saved successfully');
+                } else {
+                    console.error('Error saving procedures');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>
