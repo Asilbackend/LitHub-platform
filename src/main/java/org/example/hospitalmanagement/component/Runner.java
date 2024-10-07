@@ -85,7 +85,6 @@ public class Runner implements CommandLineRunner {
             Patient patient4 = patientRepository.save(Patient.builder().user(userRepository.save(User.builder().phone("930458263").firstName("Jahon").lastName("Sattorov")
                     .password(passwordEncoder.encode("123")).roles(List.of(rolePatient)).build())).build());
 
-
             Administrator administrator1 = administratorRepository.save(Administrator.builder().user(
                     userRepository.save(User.builder().phone("100").firstName("Salohiddin").lastName("Ochilov")
                             .password(passwordEncoder.encode("123")).roles(List.of(roleAdmin)).build())
